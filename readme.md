@@ -26,7 +26,7 @@ http://localhost:3000/pokemon?identifier=nome do pokemon ou ID da pokedex
 ```
 
 #### 2. Listar Pokémons
-- Rota: `GET /pokemons`
+- Rota: `GET /pokemon`
 - **Descrição** Permite ao usuário pesquisar listar todos pokémons armazenados na Database.
 - Exemplo de resposta de sucesso:
 ```
@@ -39,6 +39,18 @@ http://localhost:3000/pokemon?identifier=nome do pokemon ou ID da pokedex
     "types": "electric"
   }
 ]
+```
+- Além da pesquisa geral, também é possivel fazer pesquisas com filtros de acordo com as tipagens do pokémon, através do query param:
+- Rota: GET /pokemon?type=fire
+
+#### 3. Deletar Pokémons
+- Rota: `DELETE /pokemon/:id`
+- **Descrição** Permite ao usuário deletar um pokémon com base no ID dele dentro da Database.
+- Exemplo de resposta de sucesso:
+```
+{
+  message: "Pokémon deletado com sucesso!"
+}
 ```
 
 <hr>

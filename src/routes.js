@@ -47,8 +47,17 @@ async function postPoke (request, reply) {
 // FUNÇÃO PARA LISTAR POKÉMONS
 async function getPokes (request, reply) {
     try {
-        const query = 'SELECT * FROM pokemons';
-        const [listPokes] = await request.server.database.query(query);
+        let query = 'SELECT * FROM pokemons';
+        let values = [];
+
+        // VERIFICAÇÃO DE FILTRO DE TIPO
+        const {type} = request.query;
+        if(type) {
+            query += ' WHERE types LIKE ?';
+            values.push(`%${type}%`);
+        }
+
+        const [listPokes] = await request.server.database.query(query, values);
         return reply.status(200).send(listPokes);
 
     } catch (error) {
@@ -57,10 +66,28 @@ async function getPokes (request, reply) {
     }
 }
 
-// REGISTRA ROTAS DO FASTIFY
+// FUNÇÃO PARA DELETAR UM POKÉMON
+async function deletePoke (request,reply) {
+    const { id } = request.params;
+    try {
+        const query = 'DELETE FROM pokemons WHERE id = ?';
+        const [deleted] = await request.server.database.query(query, [id]);
+
+        if (deleted.affectedRows === 0) {
+            return reply.status(404).send({ error: 'Pokémon não encontrado' });
+        }
+        return reply.status(200).send({ message: 'Pokémon deletado com sucesso' });
+    } catch (error) {
+        console.error('Erro ao deletar o Pokémon:', error);
+        return reply.status(500).send({ error: 'Erro interno do servidor' });
+    }
+}
+
+// REGISTRA ROTAS DO FASTIFY    
 async function pokeRoutes(fastify) {
     fastify.post('/pokemon', postPoke);
     fastify.get('/pokemon', getPokes);
+    fastify.delete('/pokemon/:id', deletePoke);
 }
 
 // EXPORTA AS ROTAS FASTIFY
